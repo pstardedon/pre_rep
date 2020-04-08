@@ -1,0 +1,198 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+
+        primarySwatch: Colors.blue,
+      ),
+      home: SignIn(),
+    );
+  }
+}
+class SignIn extends StatefulWidget {
+  @override
+  _SignInState createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
+  Firestore _db = Firestore.instance;
+  String name;
+  String title;
+  TextEditingController fnameController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+
+
+  void Login()async{
+    final form = formKey.currentState;
+    if(form.validate()){
+      form.save();
+    final file = await _db.collection("Entry").add(
+      {
+        "name": fnameController.text,
+        "title": titleController.text,
+      }
+    );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('Sign In',
+            style: TextStyle(
+                color: Colors.white
+            ),
+          ),
+
+        ),
+        body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+
+              children: <Widget>[
+                SizedBox(
+                  height: 50,
+                ),
+                /*Center(
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        height: 300,
+                        width: 300,
+                        child: FlareActor(
+                          "asset/Teddy.flr",
+                          fit: BoxFit.contain,
+                          animation: "idle",
+                        ),
+                      ),
+                      Positioned(
+                          left: 30,
+                          top: 270,
+                          child: Text(""))
+                    ],
+                  ),
+                ),*/
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        margin: const EdgeInsets.only(left: 20, right: 20),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)
+                        ),
+                        child: TextFormField(
+                          validator: (val){
+                            if(val.length < 3){
+                              return "Invalid FullName";
+                            }
+                            else{
+                              return null;
+                            }
+                          },
+                          controller: fnameController,
+                          onSaved: (value){
+                            name = value;
+                          },
+                          decoration: InputDecoration(
+                            //errorText: ,
+                              hintText: "Full Name",
+                              labelText: "Name",
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.only(left: 20)
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 20,),
+
+                      Container(
+                        margin: const EdgeInsets.only(left: 20, right: 20),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)
+                        ),
+                        child: TextFormField(
+                          autofocus: true,
+                          validator: (value){
+                            if(value.length < 3){
+                              return "too short";
+                            }
+                            else{
+                              return null;
+                            }
+                          },
+                          onSaved: (value){
+                            title = value;
+                          },
+                          obscureText: true,
+                          controller: titleController,
+                          decoration: InputDecoration(
+                              hintText: "Title",
+                              labelText: "title",
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.only(left: 20)
+                          ),
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        child: RaisedButton(
+                            color: Colors.cyan,
+                            textColor: Colors.white,
+                            child: Text("SignIn",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                //color: Colors.white
+                              ),
+                            ),
+                            onPressed: (){
+                              Login();
+                            }),
+                      ),
+                    ],
+                  ),
+                ),
+
+
+
+                Padding(
+                  padding: const EdgeInsets.only(top:60),
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text("Don't have an Account Yet"),
+
+                        FlatButton(
+                          child: Text("SignUp now!"),
+
+                          onPressed: (){
+                            Login();
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+        )
+    );
+  }
+}
+
